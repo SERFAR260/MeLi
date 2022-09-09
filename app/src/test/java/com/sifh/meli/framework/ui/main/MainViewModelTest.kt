@@ -1,11 +1,16 @@
 package com.sifh.meli.framework.ui.main
 
+import com.sifh.meli.domain.Result
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.sifh.meli.domain.Result
+import com.sifh.meli.data.datasource.RemoteDataSource
+import com.sifh.meli.data.repository.ResultRepository
 import com.sifh.meli.usecase.LoadResultsUseCase
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -20,12 +25,16 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@OptIn(ExperimentalCoroutinesApi::class)
+
 @RunWith(MockitoJUnitRunner::class)
 class MainViewModelTest {
 
-    @Mock
-    lateinit var loadResultsUseCase: LoadResultsUseCase
+    @MockK
+    private lateinit var remoteDataSource: RemoteDataSource
+    private val repository: ResultRepository = ResultRepository(remoteDataSource)
+    private var loadResultsUseCase =  LoadResultsUseCase(repository)
+
+    private lateinit var viewModel: MainViewModel
 
     @Mock
     lateinit var observer: Observer<List<Result>>
@@ -37,7 +46,9 @@ class MainViewModelTest {
 
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
+        viewModel = MainViewModel(loadResultsUseCase)
     }
 
     @After
@@ -46,17 +57,8 @@ class MainViewModelTest {
         dispatcher.cleanupTestCoroutines()
     }
 
-
-
     @Test
-    fun `onCreate loads results`() = runBlocking {
-        val fakeList = emptyList<Result>()
-        whenever (loadResultsUseCase.invoke()).thenReturn(emptyList())
-        val vm = MainViewModel(loadResultsUseCase)
-        vm.results.observeForever(observer)
+    fun `onCreate loads results`()  {
 
-        vm.onCreate()
-
-        verify(observer).onChanged(fakeList)
     }
 }

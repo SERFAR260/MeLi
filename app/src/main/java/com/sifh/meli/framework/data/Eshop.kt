@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class Eshop (
 
   @SerializedName("seller"           ) var seller          : Int?              = null,
-  @SerializedName("eshop_rubro"      ) var eshopRubro      : String?           = null,
+  @SerializedName("eshop_rubro"      ) var eshopRubro      : EshopRubro?           = null,
   @SerializedName("eshop_id"         ) var eshopId         : Int?              = null,
   @SerializedName("nick_name"        ) var nickName        : String?           = null,
   @SerializedName("site_id"          ) var siteId          : String?           = null,
